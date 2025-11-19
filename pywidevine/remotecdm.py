@@ -85,13 +85,14 @@ class RemoteCdm(Cdm):
             raise ValueError(f"Could not test Remote API version [{r.status_code}]")
         server = r.headers.get("Server")
         if not server or "pywidevine serve" not in server.lower():
-            raise ValueError(f"This Remote CDM API does not seem to be a pywidevine serve API ({server}).")
-        server_version_re = re.search(r"pywidevine serve v([\d.]+)", server, re.IGNORECASE)
-        if not server_version_re:
-            raise ValueError("The pywidevine server API is not stating the version correctly, cannot continue.")
-        server_version = server_version_re.group(1)
-        if server_version < "1.4.3":
-            raise ValueError(f"This pywidevine serve API version ({server_version}) is not supported.")
+            print(f"This Remote CDM API does not seem to be a pywidevine serve API ({server}).")
+        else:
+            server_version_re = re.search(r"pywidevine serve v([\d.]+)", server, re.IGNORECASE)
+            if not server_version_re:
+                raise ValueError("The pywidevine server API is not stating the version correctly, cannot continue.")
+            server_version = server_version_re.group(1)
+            if server_version < "1.4.3":
+                raise ValueError(f"This pywidevine serve API version ({server_version}) is not supported.")
 
     @classmethod
     def from_device(cls, device: Device) -> RemoteCdm:
